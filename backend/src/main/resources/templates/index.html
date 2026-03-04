@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Smart E-Commerce API • All Endpoints Overview</title>
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004080;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #fd7e14;
+            --danger: #dc3545;
+            --purple: #6f42c1;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--light);
+            color: #222;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        header {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: white;
+            margin-bottom: 2rem;
+        }
+        h1 { margin: 0; font-size: 2.8rem; }
+        .tagline { font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem; }
+
+        .section-title {
+            color: var(--primary-dark);
+            font-size: 2rem;
+            margin: 2.5rem 0 1.2rem;
+            padding-left: 1rem;
+            border-left: 5px solid var(--primary);
+        }
+
+        .endpoint-card {
+            background: white;
+            border-radius: 10px;
+            margin: 1rem 0;
+            padding: 1.3rem 1.6rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .endpoint-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .method-badge {
+            font-weight: bold;
+            padding: 0.5em 1em;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.95rem;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .GET    { background: var(--success); }
+        .POST   { background: var(--info); }
+        .PUT    { background: var(--warning); }
+        .PATCH  { background: var(--purple); }
+        .DELETE { background: var(--danger); }
+
+        .path {
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.05rem;
+            flex: 1;
+        }
+
+        .description {
+            color: #444;
+            font-size: 0.97rem;
+            flex-basis: 100%;
+        }
+
+        .swagger-btn {
+            display: inline-block;
+            margin: 1.5rem 0;
+            padding: 0.9rem 1.8rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .swagger-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .endpoint-card { flex-direction: column; align-items: flex-start; }
+            h1 { font-size: 2.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Smart E-Commerce Platform API</h1>
+    <p class="tagline">Complete REST API Overview • Production Ready • January 2026</p>
+</header>
+
+<div class="container">
+
+    <a href="/api/swagger-ui/index.html" target="_blank" class="swagger-btn">
+        → Open Full Interactive Swagger UI
+    </a>
+
+    <a href="/api/graphiql" target="_blank" class="swagger-btn">
+        → Open Full API Interactive with GraphiQL
+    </a>
+    <h2 class="section-title">Public & Home</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/</span>
+        <div class="description">Main landing page (rendered HTML)</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/home</span>
+        <div class="description">API information, version, features & useful endpoints</div>
+    </div>
+
+    <h2 class="section-title">Authentication & Users</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/v1/users/{id}</span>
+        <div class="description">Get user details by ID (admin or self)</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge POST">POST</span>
+        <span class="path">/v1/users</span>
+        <div class="description">Register / Create new user</div>
+    </div>
+
+    <h2 class="section-title">Products</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/products</span>
+        <div class="description">List all products (advanced filtering, pagination, sorting)</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/products/{id}  or  /api/v1/products/{slug}</span>
+        <div class="description">Get single product (by ID or SEO-friendly slug)</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/products/featured</span>
+        <div class="description">Get featured / promoted products</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/products/category/{categoryId}</span>
+        <div class="description">Products by category</div>
+    </div>
+
+    <h2 class="section-title">Categories</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/categories</span>
+        <div class="description">List all categories</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/categories/hierarchy</span>
+        <div class="description">Full nested category tree</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/categories/slug/{slug}</span>
+        <div class="description">Get category by URL-friendly slug</div>
+    </div>
+
+    <h2 class="section-title">Cart Management</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/carts/{cartId}</span>
+        <div class="description">View cart contents</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge POST">POST</span>
+        <span class="path">/carts/{cartId}/items</span>
+        <div class="description">Add product to cart</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge DELETE">DELETE</span>
+        <span class="path">/carts/{cartId}/items/{productId}</span>
+        <div class="description">Remove specific item from cart</div>
+    </div>
+
+    <h2 class="section-title">Orders — Most Important</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/orders/my-orders</span>
+        <div class="description">List current user's orders</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/orders/admin/all?page=0&size=20&sortBy=orderDate&direction=DESC</span>
+        <div class="description">Get ALL orders (Admin only) — paginated</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge POST">POST</span>
+        <span class="path">/orders</span>
+        <div class="description">Create new order (checkout)</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge PUT">PUT</span>
+        <span class="path">/orders/{id}/cancel</span>
+        <div class="description">Cancel own order</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge PUT">PUT</span>
+        <span class="path">/orders/admin/{id}/ship</span>
+        <div class="description">Mark order as shipped (Admin)</div>
+    </div>
+
+    <h2 class="section-title">Wishlist</h2>
+    <div class="endpoint-card">
+        <span class="method-badge GET">GET</span>
+        <span class="path">/api/v1/wishlist</span>
+        <div class="description">Get current user wishlist</div>
+    </div>
+    <div class="endpoint-card">
+        <span class="method-badge POST">POST</span>
+        <span class="path">/api/v1/wishlist</span>
+        <div class="description">Add product to wishlist</div>
+    </div>
+
+</div>
+
+<footer>
+    <p>Smart E-Commerce Backend • Production-grade REST API • © 2026</p>
+    <p>Best viewed with full Swagger at <code>/v3/api-docs/public</code></p>
+</footer>
+
+</body>
+</html>
