@@ -1,0 +1,107 @@
+# Category GraphQL Schema
+
+extend type Query {
+    # Basic Queries
+    category(id: ID!): CategoryResponse
+    categoryBySlug(slug: String!): CategoryResponse
+
+    # List Queries
+    categories(pagination: PageInput): CategoryResponseDto!
+    activeCategories: [CategoryResponse!]!
+    activeCategoriesPaginated(pagination: PageInput): CategoryResponseDto!
+    featuredCategories: [CategoryResponse!]!
+
+    # Search Queries
+    searchCategories(keyword: String!, pagination: PageInput): CategoryResponseDto!
+    searchActiveCategories(keyword: String!, pagination: PageInput): CategoryResponseDto!
+
+    # Filter Queries
+    filterCategories(filter: CategoryFilterInput!, pagination: PageInput): CategoryResponseDto!
+    advancedFilterCategories(filter: CategoryFilterInput!, pagination: PageInput): CategoryResponseDto!
+
+    # Product-Based Queries
+    categoriesWithProducts(pagination: PageInput): CategoryResponseDto!
+    categoriesByProductCount(pagination: PageInput): CategoryResponseDto!
+
+    # Date-Based Queries
+    categoriesCreatedBetween(startDate: DateTime!, endDate: DateTime!, pagination: PageInput): CategoryResponseDto!
+    categoriesUpdatedBetween(startDate: DateTime!, endDate: DateTime!, pagination: PageInput): CategoryResponseDto!
+
+    # Bulk Queries
+    categoriesByIds(ids: [ID!]!): [CategoryResponse!]!
+    categoriesBySlugs(slugs: [String!]!): [CategoryResponse!]!
+}
+
+extend type Mutation {
+    # Create & Update
+    createCategory(input: CategoryCreateRequest!): CategoryResponse!
+    updateCategory(id: ID!, input: CategoryUpdateRequest!): CategoryResponse!
+
+    # Status Toggles
+    activateCategory(id: ID!): CategoryResponse!
+    deactivateCategory(id: ID!): CategoryResponse!
+    featureCategory(id: ID!): CategoryResponse!
+    unfeatureCategory(id: ID!): CategoryResponse!
+
+    # Delete
+    deleteCategory(id: ID!): Boolean!
+}
+
+# Types
+
+type CategoryResponse {
+    id: ID!
+    slug: String!
+    name: String!
+    description: String
+    imageUrl: String
+    displayOrder: Int!
+    isActive: Boolean!
+    featured: Boolean!
+    icon: String
+    color: String
+    productCount: Int
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type CategoryResponseDto {
+    content: [CategoryResponse!]!
+    pageInfo: PageInfo!
+}
+
+# Input Types
+
+input CategoryCreateRequest {
+    name: String!
+    description: String
+    imageUrl: String
+    displayOrder: Int
+    featured: Boolean
+    icon: String
+    color: String
+}
+
+input CategoryUpdateRequest {
+    name: String
+    description: String
+    imageUrl: String
+    displayOrder: Int
+    featured: Boolean
+    icon: String
+}
+
+input CategoryFilterInput {
+    # Basic filters
+    name: String
+    description: String
+    isActive: Boolean
+    featured: Boolean
+    hasProducts: Boolean
+
+    # Order range filters
+    minOrder: Int
+    maxOrder: Int
+}
+
+# Remove PageInfo type from this file. Use the shared/Pagination.graphqls definition instead.

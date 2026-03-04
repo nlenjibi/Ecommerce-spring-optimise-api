@@ -1,0 +1,68 @@
+# Shared Order Types and Enums
+
+enum OrderStatus {
+    PENDING
+    CONFIRMED
+    PROCESSING
+    SHIPPED
+    OUT_FOR_DELIVERY
+    DELIVERED
+    CANCELLED
+    REFUNDED
+    FAILED
+}
+
+enum PaymentStatus {
+    PENDING
+    PAID
+    COMPLETED
+    FAILED
+    REFUNDED
+    PARTIALLY_REFUNDED
+}
+
+type OrderItem {
+    id: ID!
+    productId: ID!
+    productName: String!
+    quantity: Int!
+    unitPrice: BigDecimal!
+    discount: BigDecimal!
+    totalPrice: BigDecimal!
+    productImageUrl: String
+}
+
+type Order {
+    id: ID!
+    orderNumber: String!
+    status: OrderStatus!
+    orderDate: DateTime!
+    subtotal: BigDecimal!
+    taxAmount: BigDecimal!
+    shippingCost: BigDecimal!
+    discountAmount: BigDecimal!
+    couponDiscount: BigDecimal!
+    totalAmount: BigDecimal!
+    couponCode: String
+    paymentStatus: PaymentStatus!
+    paymentMethod: PaymentMethod
+    paidAt: DateTime
+    shippingAddress: String
+    trackingNumber: String
+    carrier: String
+    shippedAt: DateTime
+    estimatedDeliveryDate: DateTime
+    deliveredAt: DateTime
+    cancelledAt: DateTime
+    cancellationReason: String
+    refundedAt: DateTime
+    refundAmount: BigDecimal
+    refundReason: String
+    customerNotes: String
+    items: [OrderItem!]!
+    customerEmail: String
+    customerName: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+

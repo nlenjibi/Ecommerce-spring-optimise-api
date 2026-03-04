@@ -1,0 +1,11 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query
+
+type Mutation
+
+# The root Query and Mutation types are defined here only. All other schema files should use 'extend type Query' and 'extend type Mutation'.
+# Do not redefine Query or Mutation in other files to avoid redefinition errors.

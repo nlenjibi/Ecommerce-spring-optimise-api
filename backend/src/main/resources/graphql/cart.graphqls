@@ -1,0 +1,59 @@
+enum CartStatus {
+    ACTIVE
+    ABANDONED
+    CONVERTED
+}
+
+type Cart {
+    id: ID!
+    status: CartStatus!
+    items: [CartItem!]!
+    totalPrice: BigDecimal!
+    discountAmount: BigDecimal!
+    couponCode: String
+    itemCount: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+type CartItem {
+    id: ID!
+    product: ProductResponse!
+    quantity: Int!
+    unitPrice: BigDecimal!
+    totalPrice: BigDecimal!
+}
+
+input AddItemToCartInput {
+    productId: ID!
+    quantity: Int!
+}
+
+input UpdateCartItemInput {
+    quantity: Int!
+}
+
+extend type Query {
+    # Security: AUTHENTICATED - Own cart only
+    cart(id: ID!): Cart
+}
+
+extend type Mutation {
+    # Security: AUTHENTICATED - Create cart for logged in user
+    createCart: Cart!
+    
+    # Security: AUTHENTICATED - Add item to own cart
+    addItemToCart(cartId: ID!, input: AddItemToCartInput!): CartItem!
+    
+    # Security: AUTHENTICATED - Update item in own cart
+    updateCartItem(cartId: ID!, productId: ID!, input: UpdateCartItemInput!): CartItem!
+    
+    # Security: AUTHENTICATED - Remove item from own cart
+    removeCartItem(cartId: ID!, productId: ID!): Boolean!
+    
+    # Security: AUTHENTICATED - Clear own cart
+    clearCart(cartId: ID!): Boolean!
+    
+    # Security: AUTHENTICATED - Merge guest cart with user cart
+    mergeCart(guestCartId: ID!): Cart!
+}

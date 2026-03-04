@@ -1,0 +1,97 @@
+enum Role {
+    USER
+    ADMIN
+    SELLER
+    CUSTOMER
+    STAFF
+}
+
+"""
+Security: No authentication required - Publicly accessible
+"""
+type User {
+    id: ID!
+    email: String!
+    username: String!
+    firstName: String!
+    lastName: String!
+    fullName: String!
+    phoneNumber: String
+    role: Role!
+    isActive: Boolean!
+    emailVerified: Boolean!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+"""
+Security: Requires AUTHENTICATION
+"""
+type UserPage {
+    content: [User!]!
+    pageInfo: PageInfo!
+}
+
+"""
+Security: Requires ADMIN role
+"""
+type AdminDashboard {
+    totalUsers: Long!
+    totalProducts: Long!
+    totalOrders: Long!
+    totalRevenue: BigDecimal!
+    pendingOrders: Long!
+    activeUsers: Long!
+    lowStockProducts: Long!
+}
+
+input UserCreateInput {
+    email: String!
+    username: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+    phoneNumber: String
+    role: Role!
+}
+
+input UserUpdateInput {
+    email: String
+    username: String
+    firstName: String
+    lastName: String
+    phoneNumber: String
+}
+
+input UserFilterInput {
+    search: String
+    role: Role
+    active: Boolean
+    emailVerified: Boolean
+    createdAfter: DateTime
+    createdBefore: DateTime
+    phoneNumber: String
+    name: String
+}
+
+# Security:
+# - user(id): Public
+# - users: ADMIN only
+# - currentUser: AUTHENTICATED only
+# - adminDashboard: ADMIN only
+# - staffDashboard: ADMIN or STAFF
+extend type Query {
+    user(id: ID!): User
+    users(pagination: PageInput, filter: UserFilterInput): UserPage!
+    currentUser: User
+    adminDashboard: AdminDashboard!
+    staffDashboard: AdminDashboard!
+}
+
+extend type Mutation {
+    createUser(input: UserCreateInput!): User!
+    updateUser(id: ID!, input: UserUpdateInput!): User!
+    deleteUser(id: ID!): Boolean!
+    lockAccount(userId: ID!): Boolean!
+    unlockAccount(userId: ID!): Boolean!
+}

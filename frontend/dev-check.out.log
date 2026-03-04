@@ -1,0 +1,13 @@
+
+> ecommerce-frontend@0.1.0 dev
+> set NEXT_DISABLE_TURBOPACK=1&& next dev
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3000
+   - Network:      http://10.19.116.141:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 5.6s
