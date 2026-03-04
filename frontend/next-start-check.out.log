@@ -1,0 +1,9 @@
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3021
+   - Network:      http://10.19.116.141:3021
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ ✓ Starting...
+ ✓ Ready in 5.4s
