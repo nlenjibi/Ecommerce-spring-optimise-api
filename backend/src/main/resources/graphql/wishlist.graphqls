@@ -1,0 +1,138 @@
+# ──────────────────────────────────────────────────────────────
+#  Scalars (must be declared or imported in root schema)
+# ──────────────────────────────────────────────────────────────
+# scalar BigDecimal
+# scalar DateTime
+
+# ──────────────────────────────────────────────────────────────
+#  Enums
+# ──────────────────────────────────────────────────────────────
+enum WishlistPriority {
+    HIGH
+    MEDIUM
+    LOW
+    URGENT
+}
+
+# ──────────────────────────────────────────────────────────────
+#  Types
+# ──────────────────────────────────────────────────────────────
+type WishlistItem {
+    id:                  ID!
+    userId:              ID!
+    product:             ProductSummary!
+    notes:               String
+    priority:            WishlistPriority!
+    desiredQuantity:     Int!
+
+    # Price tracking
+    priceWhenAdded:      BigDecimal
+    currentPrice:        BigDecimal
+    priceDifference:     BigDecimal
+    isPriceDropped:      Boolean
+    targetPrice:         BigDecimal
+
+    # Notification flags
+    notifyOnPriceDrop:   Boolean
+    notifyOnStock:       Boolean
+    shouldNotifyPriceDrop: Boolean
+    shouldNotifyStock:   Boolean
+
+    # Status
+    purchased:           Boolean!
+    isPublic:            Boolean!
+    inStock:             Boolean!
+
+    addedAt:             DateTime!
+    purchasedAt:         DateTime
+}
+
+"""Lightweight product snapshot embedded in each wishlist item."""
+type ProductSummary {
+    id:                ID!
+    name:              String!
+    slug:              String
+    sku:               String
+    price:             BigDecimal!
+    discountPrice:     BigDecimal
+    imageUrl:          String
+    categoryName:      String
+    inStock:           Boolean!
+    availableQuantity: Int
+    inventoryStatus:   String
+}
+
+type WishlistSummary {
+    userId:              ID!
+    totalItems:          Int!
+    inStockItems:        Int!
+    outOfStockItems:     Int!
+    itemsWithPriceDrops: Int!
+    purchasedItems:      Int!
+    totalValue:          BigDecimal!
+    totalSavings:        BigDecimal!
+    items:               [WishlistItem!]!
+}
+
+type WishlistItemPage {
+    content:  [WishlistItem!]!
+    pageInfo: PageInfo!
+}
+
+# ──────────────────────────────────────────────────────────────
+#  Inputs
+# ──────────────────────────────────────────────────────────────
+input AddToWishlistInput {
+    productId:         ID!
+    priority:          WishlistPriority
+    notes:             String
+    desiredQuantity:   Int
+    notifyOnPriceDrop: Boolean
+    notifyOnStock:     Boolean
+    targetPrice:       BigDecimal
+    collectionName:    String
+}
+
+input UpdateWishlistItemInput {
+    priority:          WishlistPriority
+    notes:             String
+    desiredQuantity:   Int
+    targetPrice:       BigDecimal
+    notifyOnPriceDrop: Boolean
+    notifyOnStock:     Boolean
+    isPublic:          Boolean
+}
+
+# ──────────────────────────────────────────────────────────────
+#  Queries
+# ──────────────────────────────────────────────────────────────
+# Security: All wishlist operations require AUTHENTICATION
+extend type Query {
+    # Security: AUTHENTICATED - Own wishlist only
+    myWishlist:                    [WishlistItem!]!
+    myWishlistPaginated(pagination: PageInput): WishlistItemPage!
+    wishlistSummary:               WishlistSummary!
+    isInWishlist(productId: ID!):  Boolean!
+    wishlistItemsWithPriceDrops:   [WishlistItem!]!
+}
+
+# ──────────────────────────────────────────────────────────────
+#  Mutations
+# ──────────────────────────────────────────────────────────────
+
+extend type Mutation {
+    # Security: AUTHENTICATED - Add to own wishlist
+    addToWishlist(input: AddToWishlistInput!):                           WishlistItem!
+    
+    # Security: AUTHENTICATED - Update own wishlist item
+    updateWishlistItem(productId: ID!, input: UpdateWishlistItemInput!): WishlistItem!
+    
+    # Security: AUTHENTICATED - Remove from own wishlist
+    removeFromWishlist(productId: ID!):                                  Boolean!
+    
+    # Security: AUTHENTICATED - Clear own wishlist
+    clearWishlist:                                                       Boolean!
+    
+    # Security: AUTHENTICATED - Mark item as purchased
+    markWishlistItemPurchased(productId: ID!):                          WishlistItem!
+}

@@ -1,0 +1,7 @@
+# REMOVED duplicate enum SortDirection to avoid redefinition error (now only in shared/enum.graphqls)
+
+# Enum for sorting direction
+enum SortDirection {
+    ASC
+    DESC
+}

@@ -1,0 +1,62 @@
+type Review {
+id: ID!
+product: ProductResponse!
+user: User!
+rating: Int!
+title: String
+comment: String!
+verifiedPurchase: Boolean!
+createdAt: DateTime!
+}
+
+type ProductRatingStats {
+productId: ID!
+averageRating: Float!
+totalReviews: Int!
+}
+
+type ReviewPage {
+content: [Review!]!
+pageInfo: PageInfo!
+}
+
+input ReviewCreateInput {
+productId: ID!
+rating: Int!
+title: String
+comment: String!
+}
+
+input ReviewUpdateInput {
+rating: Int
+title: String
+comment: String
+}
+
+type ReviewResponse {
+review: Review
+errors: [String!]
+}
+
+type ReviewResponseDto {
+content: [Review!]!
+pageInfo: PageInfo!
+errors: [String!]
+}
+
+type ReviewSummaryResponse {
+stats: ProductRatingStats!
+errors: [String!]
+}
+
+extend type Query {
+productReviews(productId: ID!, pagination: PageInput): ReviewResponseDto!
+productRatingStats(productId: ID!): ReviewSummaryResponse!
+}
+
+extend type Mutation {
+createReview(input: ReviewCreateInput!): ReviewResponse!
+updateReview(id: ID!, input: ReviewUpdateInput!): ReviewResponse!
+deleteReview(id: ID!): Boolean!
+markReviewHelpful(id: ID!): ReviewResponse!
+}

@@ -1,0 +1,118 @@
+# REMOVED enum OrderStatus, enum PaymentStatus, type OrderItem, type Order from order.graphqls to avoid redefinition error. These should only be defined once, ideally in a shared or core schema file.
+# OrderStatus, PaymentStatus, OrderItem, and Order types/enums are now defined in shared/orderTypes.graphqls. Only reference them here.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Enums
+# ─────────────────────────────────────────────────────────────────────────────
+enum PaymentMethod {
+    CREDIT_CARD
+    DEBIT_CARD
+    PAYPAL
+    BANK_TRANSFER
+    MOBILE_MONEY
+    CASH_ON_DELIVERY
+    STRIPE
+    RAZORPAY
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Core types
+# ─────────────────────────────────────────────────────────────────────────────
+type OrderStats {
+    totalOrders: Int!
+    pendingOrders: Int!
+    processingOrders: Int!
+    shippedOrders: Int!
+    deliveredOrders: Int!
+    cancelledOrders: Int!
+    totalRevenue: BigDecimal!
+    monthlyRevenue: BigDecimal!
+    averageOrderValue: BigDecimal!
+}
+
+type OrderPage {
+    content: [Order!]!
+    pageInfo: PageInfo!
+}
+
+type OrderResponse {
+    order: Order
+    errors: [String!]
+}
+
+type OrderResponseDto {
+    content: [Order!]!
+    pageInfo: PageInfo!
+    errors: [String!]
+}
+
+type OrderStatsResponse {
+    stats: OrderStats!
+    errors: [String!]
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Inputs
+# ─────────────────────────────────────────────────────────────────────────────
+input OrderItemInput {
+    productId: ID!
+    quantity: Int!
+}
+
+input OrderCreateInput {
+    items: [OrderItemInput!]!
+    shippingCost: BigDecimal
+    paymentMethod: PaymentMethod
+    shippingAddress: String
+    customerNotes: String
+    couponCode: String
+}
+
+input OrderFilterInput {
+    status: OrderStatus
+    userId: ID
+    minAmount: BigDecimal
+    maxAmount: BigDecimal
+    startDate: DateTime
+    endDate: DateTime
+    orderNumber: String
+    customerEmail: String
+    highValue: Boolean
+    overdue: Boolean
+    isActive: Boolean = true
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Queries
+# ─────────────────────────────────────────────────────────────────────────────
+extend type Query {
+    # Security: AUTHENTICATED - Customer's own orders only
+    # Customer
+    order(id: ID!): OrderResponse
+    orderByNumber(orderNumber: String!): OrderResponse
+    myOrders(pagination: PageInput): OrderResponseDto!
+
+    # Security: ADMIN or STAFF only
+    # Admin
+    allOrders(pagination: PageInput): OrderResponseDto!
+    orderStatistics: OrderStatsResponse!
+    staffOrderManagement(pagination: PageInput): OrderResponseDto!
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Mutations
+# ─────────────────────────────────────────────────────────────────────────────
+extend type Mutation {
+    # Security: AUTHENTICATED - Customer can create/cancel their own orders
+    # Customer
+    createOrder(input: OrderCreateInput!): OrderResponse!
+    cancelOrder(id: ID!, reason: String!): OrderResponse!
+
+    # Security: ADMIN or STAFF only
+    # Admin
+    confirmOrder(id: ID!): OrderResponse!
+    processOrder(id: ID!): OrderResponse!
+    shipOrder(id: ID!, trackingNumber: String!, carrier: String): OrderResponse!
+    deliverOrder(id: ID!): OrderResponse!
+    refundOrder(id: ID!, amount: BigDecimal!, reason: String!): OrderResponse!
+}

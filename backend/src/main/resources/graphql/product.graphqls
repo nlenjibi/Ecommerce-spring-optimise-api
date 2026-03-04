@@ -1,0 +1,310 @@
+# Product GraphQL Schema
+# Includes advanced filtering, pagination, and inventory management
+
+# Product Types
+type ProductResponse {
+    id: ID!
+    name: String!
+    description: String
+    slug: String!
+    sku: String
+    price: BigDecimal!
+    discountPrice: BigDecimal
+    costPrice: BigDecimal
+    effectivePrice: BigDecimal!
+    discountPercentage: BigDecimal!
+    stockQuantity: Int!
+    reservedQuantity: Int!
+    availableQuantity: Int!
+    lowStockThreshold: Int!
+    reorderPoint: Int!
+    reorderQuantity: Int
+    maxStockQuantity: Int
+    inventoryStatus: InventoryStatus!
+    trackInventory: Boolean!
+    allowBackorder: Boolean!
+    expectedRestockDate: DateTime
+    lastRestockedAt: DateTime
+    featured: Boolean!
+    isNew: Boolean!
+    isBestseller: Boolean!
+    viewCount: Long!
+    salesCount: Long!
+    ratingAverage: BigDecimal
+    ratingCount: Int!
+    imageUrl: String
+    thumbnailUrl: String
+    additionalImages: [String!]
+    metaTitle: String
+    metaDescription: String
+    tags: [String!]
+    category: CategoryInfo!
+    images: [ProductImage!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    version: Long
+}
+
+type CategoryInfo {
+    id: ID!
+    name: String!
+    slug: String!
+    description: String
+    imageUrl: String
+}
+
+type ProductImage {
+    id: ID!
+    imageUrl: String!
+    altText: String
+    isPrimary: Boolean!
+}
+
+type ProductDto {
+    content: [ProductResponse!]!
+    pageInfo: PageInfo!
+}
+
+type ProductStatisticsResponse {
+    totalProducts: Long!
+    activeProducts: Long!
+    featuredProducts: Long!
+    outOfStockProducts: Long!
+    lowStockProducts: Long!
+    averagePrice: BigDecimal!
+    totalInventoryValue: BigDecimal!
+    productsByCategory: [CategoryCount!]!
+    productsByStatus: [StatusCount!]!
+    totalViews: Long!
+    totalSales: Long!
+}
+
+type CategoryCount {
+    category: String!
+    count: Long!
+}
+
+type StatusCount {
+    status: String!
+    count: Long!
+}
+
+
+
+# Inventory Status Enum
+enum InventoryStatus {
+    IN_STOCK
+    LOW_STOCK
+    OUT_OF_STOCK
+    DISCONTINUED
+    PRE_ORDER
+    BACKORDER
+}
+
+input ProductFilterInput {
+    # Category Filters
+    categoryId: ID
+    categoryIds: [ID!]
+    categoryName: String
+    categorySlug: String
+
+    # Price Filters
+    minPrice: BigDecimal
+    maxPrice: BigDecimal
+
+    # Search Filters
+    keyword: String
+    name: String
+    sku: String
+    slug: String
+
+    # Marketing Filters
+    featured: Boolean
+    isNew: Boolean
+    isBestseller: Boolean
+
+    # Inventory Filters
+    inventoryStatus: InventoryStatus
+    inventoryStatuses: [InventoryStatus!]
+    inStockOnly: Boolean
+    lowStockOnly: Boolean
+    outOfStockOnly: Boolean
+    needsReorderOnly: Boolean
+
+    # Stock Quantity Filters
+    minStock: Int
+    maxStock: Int
+    minAvailableQuantity: Int
+
+    # Discount Filters
+    hasDiscount: Boolean
+    minDiscountPercent: Int
+    maxDiscountPercent: Int
+
+    # Rating Filters
+    minRating: BigDecimal
+    maxRating: BigDecimal
+
+    # Tag Filters
+    tags: [String!]
+
+    # Date Filters
+    createdAfter: DateTime
+    createdBefore: DateTime
+
+    # View/Sales Filters
+    minViews: Long
+    maxViews: Long
+    minSales: Long
+    popular: Boolean
+    trending: Boolean
+
+    # Eager Loading Options
+    includeCategory: Boolean = true
+    includeImages: Boolean = false
+}
+
+input ProductCreateRequest {
+    name: String!
+    description: String
+    slug: String!
+    sku: String
+    price: BigDecimal!
+    discountPrice: BigDecimal
+    costPrice: BigDecimal
+    categoryId: ID!
+    stockQuantity: Int = 0
+    lowStockThreshold: Int = 10
+    reorderPoint: Int = 5
+    reorderQuantity: Int
+    maxStockQuantity: Int
+    trackInventory: Boolean = true
+    allowBackorder: Boolean = false
+    featured: Boolean = false
+    isNew: Boolean = false
+    isBestseller: Boolean = false
+    imageUrl: String
+    thumbnailUrl: String
+    additionalImages: [String!]
+    metaTitle: String
+    metaDescription: String
+    tags: [String!]
+}
+
+input ProductUpdateRequest {
+    name: String
+    description: String
+    slug: String
+    sku: String
+    price: BigDecimal
+    discountPrice: BigDecimal
+    costPrice: BigDecimal
+    categoryId: ID
+    stockQuantity: Int
+    lowStockThreshold: Int
+    reorderPoint: Int
+    reorderQuantity: Int
+    maxStockQuantity: Int
+    trackInventory: Boolean
+    allowBackorder: Boolean
+    featured: Boolean
+    isNew: Boolean
+    isBestseller: Boolean
+    imageUrl: String
+    thumbnailUrl: String
+    additionalImages: [String!]
+    metaTitle: String
+    metaDescription: String
+    tags: [String!]
+}
+
+extend type Query {
+    # Security: PUBLIC - No authentication required
+    # Single Product Queries
+    product(id: ID!): ProductResponse
+    productBySlug(slug: String!): ProductResponse
+    productBySku(sku: String!): ProductResponse
+
+    # Security: PUBLIC - No authentication required
+    # Advanced Filtering Queries
+    products(
+        pagination: PageInput
+        filter: ProductFilterInput
+    ): ProductDto
+
+    # Security: PUBLIC - No authentication required
+    # Category-based Queries
+    productsByCategory(
+        categoryId: ID!
+        pagination: PageInput
+    ): ProductDto
+
+    productsByCategoryName(
+        categoryName: String!
+        pagination: PageInput
+    ): ProductDto
+
+    # Price-based Queries
+    productsByPriceRange(
+        minPrice: BigDecimal!
+        maxPrice: BigDecimal!
+        pagination: PageInput
+    ): ProductDto
+
+    # Marketing Queries
+    featuredProducts(pagination: PageInput): ProductDto
+    newProducts(pagination: PageInput): ProductDto
+    discountedProducts(pagination: PageInput): ProductDto
+    bestsellerProducts(pagination: PageInput): ProductDto
+    topRatedProducts(pagination: PageInput): ProductDto
+
+    trendingProducts(
+        categoryId: ID
+        limit: Int = 10
+    ): [ProductResponse!]!
+
+    # Search Queries
+    searchProducts(
+        keyword: String!
+        pagination: PageInput
+    ): ProductDto
+
+    # Inventory Management Queries
+    productsByInventoryStatus(
+        status: InventoryStatus!
+        pagination: PageInput
+    ): ProductDto
+
+    productsNeedingReorder(pagination: PageInput): ProductDto
+    lowStockProducts: [ProductResponse!]!
+    outOfStockProducts: [ProductResponse!]!
+
+    # Statistics Queries
+    productStatistics: ProductStatisticsResponse
+}
+
+extend type Mutation {
+    # Security: ADMIN only
+    # CRUD Operations
+    createProduct(input: ProductCreateRequest!): ProductResponse!
+    updateProduct(id: ID!, input: ProductUpdateRequest!): ProductResponse!
+    deleteProduct(id: ID!): Boolean!
+
+    # Security: ADMIN only
+    # Stock Management
+    reduceStock(id: ID!, quantity: Int!): ProductResponse!
+    restoreStock(id: ID!, quantity: Int!): Boolean!
+    addStock(id: ID!, quantity: Int!): ProductResponse!
+    reserveStock(id: ID!, quantity: Int!): ProductResponse!
+    releaseReservedStock(id: ID!, quantity: Int!): ProductResponse!
+
+    # Security: ADMIN only
+    # Bulk Operations
+    bulkUpdateFeatured(productIds: [ID!]!, featured: Boolean!): Boolean!
+    bulkDelete(productIds: [ID!]!): Boolean!
+
+    # Security: PUBLIC (for view count tracking)
+    # Analytics
+    incrementViewCount(id: ID!): Boolean!
+    updateRating(id: ID!, rating: Float!): ProductResponse!
+}
